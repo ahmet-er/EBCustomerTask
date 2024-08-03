@@ -5,46 +5,64 @@
 }
 
 <div class="container">
-    <form asp-action="Edit">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="Id" />
+        <div class="row">
+            <div class="col-sm-9">
+				<div class="form-group">
+					<label asp-for="FirstName" class="control-label"></label>
+					<input asp-for="FirstName" class="form-control" />
+					<span asp-validation-for="FirstName" class="text-danger"></span>
+				</div>
 
-        <div class="form-group">
-            <label asp-for="FirstName" class="control-label"></label>
-            <input asp-for="FirstName" class="form-control" />
-            <span asp-validation-for="FirstName" class="text-danger"></span>
+				<div class="form-group">
+					<label asp-for="LastName" class="control-label"></label>
+					<input asp-for="LastName" class="form-control" />
+					<span asp-validation-for="LastName" class="text-danger"></span>
+				</div>
+
+				<div class="form-group">
+					<label asp-for="Email" class="control-label"></label>
+					<input asp-for="Email" class="form-control" />
+					<span asp-validation-for="Email" class="text-danger"></span>
+				</div>
+
+				<div class="form-group">
+					<label asp-for="PhoneNumber" class="control-label"></label>
+					<input asp-for="PhoneNumber" class="form-control" />
+					<span asp-validation-for="PhoneNumber" class="text-danger"></span>
+				</div>
+
+				<div class="form-group">
+					<label asp-for="BirthDate" class="control-label"></label>
+					<input asp-for="BirthDate" class="form-control" type="date" />
+					<span asp-validation-for="BirthDate" class="text-danger"></span>
+				</div>
+            </div>
+
+            <div class="col-sm-3">
+				<div class="form-group">
+					<div class="text-center">
+						@if (!string.IsNullOrEmpty(Model.PhotoUrl) && Model.PhotoUrl != "/photos/default_user_photo.png")
+						{
+							<img src="@Model.PhotoUrl" alt="Photo" class="img-thumbnail" style="max-width: 225px; height: 225px; object-fit: cover;" />
+						}
+						else
+						{
+							<span>No photo available</span>
+						}
+					</div>
+					<input type="file" name="photo" class="form-control mt-2" />
+					<span asp-validation-for="PhotoUrl" class="text-danger"></span>
+				</div>
+            </div>
+
         </div>
+        
 
-        <div class="form-group">
-            <label asp-for="LastName" class="control-label"></label>
-            <input asp-for="LastName" class="form-control" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
-        </div>
+        
 
-        <div class="form-group">
-            <label asp-for="Email" class="control-label"></label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="PhoneNumber" class="control-label"></label>
-            <input asp-for="PhoneNumber" class="form-control" />
-            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="BirthDate" class="control-label"></label>
-            <input asp-for="BirthDate" class="form-control" type="date" />
-            <span asp-validation-for="BirthDate" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="PhotoUrl" class="control-label"></label>
-            <input asp-for="PhotoUrl" class="form-control" />
-            <span asp-validation-for="PhotoUrl" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
+        <div class="form-group mt-2">
             <button type="submit" class="btn btn-primary">Save Changes</button>
             <a asp-action="Index" class="btn btn-secondary">Back to List</a>
         </div>

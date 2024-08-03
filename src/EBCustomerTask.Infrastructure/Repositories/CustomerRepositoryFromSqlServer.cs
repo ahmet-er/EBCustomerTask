@@ -47,9 +47,14 @@ namespace EBCustomerTask.Infrastructure.Repositories
 
         public async Task UpdateAsync(Customer customer)
         {
-            _context.Customers.Update(customer);
+            var existingCustomer = await _context.Customers.FindAsync(customer.Id);
 
-            await _context.SaveChangesAsync();
+            if (existingCustomer is not null)
+            {
+                _context.Entry(existingCustomer).CurrentValues.SetValues(customer);
+                await _context.SaveChangesAsync();
+            }
+
         }
     }
 }

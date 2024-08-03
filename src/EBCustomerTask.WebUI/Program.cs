@@ -13,9 +13,21 @@ using EBCustomerTask.Infrastructure.Strategy;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: "Logs/log-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 7)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -72,6 +84,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSerilogRequestLogging();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -88,4 +102,17 @@ using var serviceScope = app.Services.CreateScope();
 var serviceProvider = serviceScope.ServiceProvider;
 DataSeed.SeedAsync(serviceProvider).Wait();
 
-app.Run();
+try
+{
+    Log.Information("Starting web host");
+    app.Run();
+
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpextedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

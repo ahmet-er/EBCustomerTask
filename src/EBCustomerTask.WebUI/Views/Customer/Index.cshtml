@@ -6,42 +6,99 @@
 
 
 <div class="container">
-    <p>
-        <a asp-action="Create" class="text-primary">Create New Customer</a>
-    </p>
+	<p>
+		<a asp-action="Create" class="text-primary">Create New Customer</a>
+	</p>
 
-    <div class="card">
-        <div class="card-header">
-            <h4>All Customers</h4>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Phone Number</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var customer in Model)
-                    {
-                        <tr>
-                            <td>@customer.FirstName</td>
-                            <td>@customer.LastName</td>
-                            <td>@customer.Email</td>
-                            <td>@customer.PhoneNumber</td>
-                            <td>
-                                <a asp-action="Details" asp-route-id="@customer.Id">Details</a>
-                                <a asp-action="Edit" asp-route-id="@customer.Id">Edit</a>
-                                <a asp-action="Delete" asp-route-id="@customer.Id">Delete</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+	<div class="card">
+		<div class="card-header">
+			<div class="row">
+				<div class="col-sm-6">
+					<h4>All Customers</h4>
+				</div>
+				<div class="col-sm-6">
+					<input type="text" id="searchInput" name="search" class="form-control" placeholder="Search..." />
+				</div>
+			</div>
+
+		</div>
+		<div class="card-body">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Email</th>
+						<th>Phone Number</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="customerTableBody">
+					@foreach (var customer in Model)
+					{
+						<tr>
+							<td>@customer.FirstName</td>
+							<td>@customer.LastName</td>
+							<td>@customer.Email</td>
+							<td>@customer.PhoneNumber</td>
+							<td>
+								<a asp-action="Details" asp-route-id="@customer.Id">Details</a>
+								<a asp-action="Edit" asp-route-id="@customer.Id">Edit</a>
+								<a asp-action="Delete" asp-route-id="@customer.Id">Delete</a>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>
+
+@section Scripts {
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const searchInput = document.getElementById('searchInput');
+			const customerTableBody = document.getElementById('customerTableBody');
+
+			let debounceTimer;
+			const debounceDelay = 300;
+
+			searchInput.addEventListener('input', async function () {
+				clearTimeout(debounceTimer);
+				debounceTimer = setTimeout(async function () {
+					const query = searchInput.value;
+
+					try {
+						const response = await fetch(`/Customer/Search?query=${encodeURIComponent(query)}`);
+
+						if (response.ok) {
+							const customers = await response.json();
+							renderTable(customers);
+						}
+					} catch (error) {
+						console.error('Error:', error);
+					}
+				}, debounceDelay);
+			});
+
+			function renderTable(customers) {
+				customerTableBody.innerHTML = '';
+				customers.forEach(customer => {
+					const row = document.createElement('tr');
+					row.innerHTML = `
+							<td>${customer.firstName}</td>
+							<td>${customer.lastName}</td>
+							<td>${customer.email}</td>
+							<td>${customer.phoneNumber}</td>
+							<td>
+								<a href="/Customer/Details/${customer.id}">Details</a>
+								<a href="/Customer/Edit/${customer.id}"">Edit</a>
+								<a href="/Customer/Delete/${customer.id}"">Delete</a>
+							</td>
+						`;
+					customerTableBody.appendChild(row);
+				});
+			}
+		});
+	</script>
+}

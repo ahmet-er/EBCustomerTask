@@ -1,13 +1,12 @@
 ﻿using EBCustomerTask.Application.DTOs;
 using EBCustomerTask.Application.Interfaces;
-using EBCustomerTask.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EBCustomerTask.WebUI.Controllers
 {
-    public class CustomerController : Controller
+	public class CustomerController : Controller
     {
         private readonly ICustomerService _customerService;
         private readonly IPhotoService _photoService;
@@ -18,9 +17,10 @@ namespace EBCustomerTask.WebUI.Controllers
 			_photoService = photoService;
 		}
 
-		public async Task<IActionResult> Index()
+		public async Task<IActionResult> Index(string search)
         {
             var customers = await _customerService.GetAllAsync();
+
             return View(customers);
         }
 
@@ -51,8 +51,6 @@ namespace EBCustomerTask.WebUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                const string defaultPhotoUrl = "/photos/default_user_photo.png";
-
                 if (photo is not null)
                 {
                     var fileName = $"{model.FirstName}_{model.LastName}_{DateTime.Now:yyyyMMdd_HHmmss}";
@@ -86,7 +84,7 @@ namespace EBCustomerTask.WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string id, CustomerUpdateViewModel model, IFormFile photo)
+        public async Task<IActionResult> Edit(string id, CustomerUpdateViewModel model, IFormFile? photo)
         {
             if (id != model.Id)
             {
@@ -103,7 +101,7 @@ namespace EBCustomerTask.WebUI.Controllers
                         return NotFound();
                     }
 
-                    if (photo is not null)
+                    if (photo is not null && photo.Length > 0)
                     {
 						var fileName = $"{model.FirstName}_{model.LastName}_{DateTime.Now:yyyyMMdd_HHmmss}";
 						model.PhotoUrl = await _photoService.UploadPhotoAsync(photo, fileName);
@@ -173,6 +171,16 @@ namespace EBCustomerTask.WebUI.Controllers
         private bool CustomerExists(string id)
         {
             return _customerService.GetCustomerByIdAsync(id) != null;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string query = "")
+        {
+            var customers = string.IsNullOrEmpty(query)
+                ? await _customerService.GetAllAsync()
+                : await _customerService.GetAllAsync(query);
+
+            return Json(customers);
         }
     }
 }
