@@ -1,0 +1,53 @@
+﻿@model EBCustomerTask.Application.DTOs.CustomerDetailViewModel
+
+@{
+	ViewData["Title"] = "Customer Details";
+}
+
+<div class="container">
+	<div class="card">
+		<div class="card-header">
+			<h4>Details for @Model.FirstName @Model.LastName</h4>
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col-sm-6">
+					<dl class="row">
+						<dt class="col-sm-3">First Name</dt>
+						<dd class="col-sm-9">@Model.FirstName</dd>
+
+						<dt class="col-sm-3">Last Name</dt>
+						<dd class="col-sm-9">@Model.LastName</dd>
+
+						<dt class="col-sm-3">Email</dt>
+						<dd class="col-sm-9">@Model.Email</dd>
+
+						<dt class="col-sm-3">Phone Number</dt>
+						<dd class="col-sm-9">@Model.PhoneNumber</dd>
+
+						<dt class="col-sm-3">Birth Date</dt>
+						<dd class="col-sm-9">@Model.BirthDate.ToShortDateString()</dd>
+					</dl>
+				</div>
+
+				<div class="col-sm-6">
+					<dl class="row">
+						<dd class="col-sm-12 text-center">
+							@if (!string.IsNullOrEmpty(Model.PhotoUrl))
+							{
+								<img src="@Model.PhotoUrl" alt="Photo" class="img-thumbnail" style="max-width: 150px; height: 150px; object-fit: cover;" />
+							}
+							else
+							{
+								<span>No photo available</span>
+							}
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<div class="card-footer">
+			<a asp-action="Index" class="btn btn-primary">Back to List</a>
+		</div>
+	</div>
+</div>

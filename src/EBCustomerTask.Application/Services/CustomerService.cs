@@ -8,46 +8,51 @@ namespace EBCustomerTask.Application.Services
 {
     public class CustomerService : ICustomerService
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly ICustomerRepositoryContext _customerRepositoryContext;
         private readonly IMapper _mapper;
 
-        public CustomerService(ICustomerRepository customerRepository, IMapper mapper)
+        public CustomerService(ICustomerRepositoryContext customerRepositoryContext, IMapper mapper)
         {
-            _customerRepository = customerRepository;
+            _customerRepositoryContext = customerRepositoryContext;
             _mapper = mapper;
         }
-
-        public async Task DeleteCustomerAsync(int id)
-        {
-            var customer = await _customerRepository.GetByIdAsync(id);
-            if (customer is not null)
-            {
-                await _customerRepository.DeleteAsync(customer);
-            }
-        }
-
+        
         public async Task<List<CustomerGetAllViewModel>> GetAllAsync()
         {
-            var customers = await _customerRepository.GetAllAsync();
+            var repository = await _customerRepositoryContext.GetRepositoryAsync();
+            var customers = await repository.GetAllAsync();
             return _mapper.Map<List<CustomerGetAllViewModel>>(customers);
         }
 
-        public async Task<CustomerDetailViewModel> GetCustomerByIdAsync(int id)
+        public async Task<CustomerDetailViewModel> GetCustomerByIdAsync(string id)
         {
-            var customer = await _customerRepository.GetByIdAsync(id);
+            var repository = await _customerRepositoryContext.GetRepositoryAsync();
+            var customer = await repository.GetByIdAsync(id);
             return _mapper.Map<CustomerDetailViewModel>(customer);
         }
 
         public async Task SaveCustomerAsync(CustomerCreateViewModel model)
         {
+            var repository = await _customerRepositoryContext.GetRepositoryAsync();
             var customer = _mapper.Map<Customer>(model);
-            await _customerRepository.SaveAsync(customer);
+            await repository.SaveAsync(customer);
         }
 
         public async Task UpdateCustomerAsync(CustomerUpdateViewModel model)
         {
+            var repository = await _customerRepositoryContext.GetRepositoryAsync();
             var customer = _mapper.Map<Customer>(model);
-            await _customerRepository.UpdateAsync(customer);
+            await repository.UpdateAsync(customer);
+        }
+
+        public async Task DeleteCustomerAsync(string id)
+        {
+            var repository = await _customerRepositoryContext.GetRepositoryAsync();
+            var customer = await repository.GetByIdAsync(id);
+            if (customer is not null)
+            {
+                await repository.DeleteAsync(customer);
+            }
         }
     }
 }

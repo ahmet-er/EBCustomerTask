@@ -1,16 +1,16 @@
-﻿using EBCustomerTask.Application.Interfaces;
-using EBCustomerTask.Core.Entities;
+﻿using EBCustomerTask.Core.Entities;
 using EBCustomerTask.Core.Enums;
+using EBCustomerTask.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace EBCustomerTask.Infrastructure.Identity
 {
-    public class IdentityService : IIdentityService
+    public class IdentityRepository : IIdentityRepository
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
 
-        public IdentityService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public IdentityRepository(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -35,7 +35,9 @@ namespace EBCustomerTask.Infrastructure.Identity
                 return IdentityResult.Failed(new IdentityError { Description = "User with this email already exist." });
             }
 
-            return await _userManager.CreateAsync(user, password);
+            var result = await _userManager.CreateAsync(user, password);
+            await AddToRoleAsync(user, Role.User);
+            return result;
         }
 
         public async Task<AppUser> GetUserByIdAsync(string userId)

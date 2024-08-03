@@ -28,7 +28,7 @@ namespace EBCustomerTask.Infrastructure.Repositories
             return await _customerCollection.Find(_ => true).ToListAsync();
         }
 
-        public async Task<Customer> GetByIdAsync(int id)
+        public async Task<Customer> GetByIdAsync(string id)
         {
             return await _customerCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
         }

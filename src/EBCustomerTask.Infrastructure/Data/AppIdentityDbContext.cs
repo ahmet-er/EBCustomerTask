@@ -10,12 +10,14 @@ namespace EBCustomerTask.Infrastructure.Data
         public AppIdentityDbContext(DbContextOptions<AppIdentityDbContext> options) : base(options) { }
 
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Configuration> Configurations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             builder.ApplyConfiguration(new CustomerConfiguration());
+            builder.ApplyConfiguration(new ConfigurationConfiguration());
         }
     }
 }

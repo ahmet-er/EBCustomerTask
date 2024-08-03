@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using EBCustomerTask.Application.DTOs;
+﻿using EBCustomerTask.Application.DTOs;
 using EBCustomerTask.Application.Interfaces;
-using EBCustomerTask.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EBCustomerTask.WebUI.Controllers
@@ -9,12 +7,10 @@ namespace EBCustomerTask.WebUI.Controllers
     public class AccountController : Controller
     {
         private readonly IIdentityService _identityService;
-        private readonly IMapper _mapper;
 
-        public AccountController(IIdentityService identityService, IMapper mapper)
+        public AccountController(IIdentityService identityService)
         {
             _identityService = identityService;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -28,8 +24,7 @@ namespace EBCustomerTask.WebUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _mapper.Map<AppUser>(model);
-                var result = await _identityService.CreateUserAsync(user, model.Password);
+                var result = await _identityService.CreateUserAsync(model, model.Password);
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
@@ -54,7 +49,7 @@ namespace EBCustomerTask.WebUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _identityService.SignInAsync(model.Email, model.Password, model.RememberMe);
+                var result = await _identityService.SignInAsync(model);
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");

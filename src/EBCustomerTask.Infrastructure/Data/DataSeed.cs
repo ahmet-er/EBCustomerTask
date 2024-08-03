@@ -28,10 +28,10 @@ namespace EBCustomerTask.Infrastructure.Data
 
             if (!dbContext.Users.Any())
             {
-                var admin1 = new AppUser() { UserName = "admin1", Email = "admin1@gmail.com" };
-                var admin2 = new AppUser() { UserName = "admin2", Email = "admin2@gmail.com" };
-                var user1 = new AppUser() { UserName = "user1", Email = "user1@gmail.com" };
-                var user2 = new AppUser() { UserName = "user2", Email = "user2@gmail.com" };
+                var admin1 = new AppUser() { UserName = "admin1@gmail.com", Email = "admin1@gmail.com" };
+                var admin2 = new AppUser() { UserName = "admin2@gmail.com", Email = "admin2@gmail.com" };
+                var user1 = new AppUser() { UserName = "user1@gmail.com", Email = "user1@gmail.com" };
+                var user2 = new AppUser() { UserName = "user2@gmail.com", Email = "user2@gmail.com" };
 
                 await userManager.CreateAsync(admin1, "Password12*");
                 await userManager.CreateAsync(admin2, "Password12*");

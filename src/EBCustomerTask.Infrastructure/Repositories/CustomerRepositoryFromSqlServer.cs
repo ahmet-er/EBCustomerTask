@@ -26,13 +26,18 @@ namespace EBCustomerTask.Infrastructure.Repositories
             return await _context.Customers.ToListAsync();
         }
 
-        public async Task<Customer> GetByIdAsync(int id)
+        public async Task<Customer> GetByIdAsync(string id)
         {
             return await _context.Customers.FindAsync(id);
         }
 
         public async Task<Customer> SaveAsync(Customer customer)
         {
+            if (string.IsNullOrEmpty(customer.Id))
+            {
+                customer.Id = Guid.NewGuid().ToString();
+            }
+
             await _context.Customers.AddAsync(customer);
 
             await _context.SaveChangesAsync();

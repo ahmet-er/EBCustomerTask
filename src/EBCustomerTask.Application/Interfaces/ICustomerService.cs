@@ -4,10 +4,10 @@ namespace EBCustomerTask.Application.Interfaces
 {
     public interface ICustomerService
     { 
-        Task<CustomerDetailViewModel> GetCustomerByIdAsync(int id);
+        Task<CustomerDetailViewModel> GetCustomerByIdAsync(string id);
         Task<List<CustomerGetAllViewModel>> GetAllAsync();
         Task SaveCustomerAsync(CustomerCreateViewModel model);
         Task UpdateCustomerAsync(CustomerUpdateViewModel model);
-        Task DeleteCustomerAsync(int id);
+        Task DeleteCustomerAsync(string id);
     }
 }

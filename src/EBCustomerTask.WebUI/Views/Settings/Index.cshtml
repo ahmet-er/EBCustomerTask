@@ -1,0 +1,41 @@
+﻿<div class="container">
+	<div class="card">
+		<div class="card-header">
+			<h4>Database type</h4>
+		</div>
+		<form asp-action="ChangeDatabase" method="post">
+			<div class="card-body">
+				<dl class="row">
+
+					<select name="databaseType" class="form-control">
+						@if (ViewBag.DatabaseType == 0)
+						{
+							<option value="0" selected="@ViewBag.DatabaseType == 0">SQLServer</option>
+							<option value="1">MongoDb</option>
+						}
+						else
+						{
+							<option value="0">SQLServer</option>
+							<option value="1" selected="@ViewBag.DatabaseType == 1">MongoDb</option>
+						}
+					</select>
+
+
+				</dl>
+			</div>
+			<div class="card-footer">
+				<button type="Submit" class="btn btn-primary mt-2">Save</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
