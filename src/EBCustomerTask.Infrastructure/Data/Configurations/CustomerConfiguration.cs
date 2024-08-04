@@ -23,6 +23,8 @@ namespace EBCustomerTask.Infrastructure.Data.Configurations
                 .HasMaxLength(100);
 
             builder.Property(x => x.PhoneNumber)
+                .HasMaxLength(10)
+                .IsFixedLength()
                 .IsRequired();
 
             builder.Property(x => x.BirthDate)

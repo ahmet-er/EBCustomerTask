@@ -7,7 +7,14 @@
 <div class="container">
 	<div class="card">
 		<div class="card-header">
+			<div class="row">
+				<div class="col-sm-9">
 			<h4>Details for @Model.FirstName @Model.LastName</h4>
+				</div>
+				<div class="col-sm-3">
+					@* <a asp-action="DownloadCustomerPdf" asp-route-id="@Model.Id" class="btn btn-primary">Print</a> *@
+				</div>
+			</div>
 		</div>
 		<div class="card-body">
 			<div class="row">
@@ -35,7 +42,7 @@
 						<dd class="col-sm-12 text-center">
 							@if (!string.IsNullOrEmpty(Model.PhotoUrl))
 							{
-								<img src="@Model.PhotoUrl" alt="Photo" class="img-thumbnail" style="max-width: 150px; height: 150px; object-fit: cover;" />
+								<img src="@Model.PhotoUrl" alt="Photo" class="img-thumbnail" style="max-width: 225px; height: 225px; object-fit: cover;" />
 							}
 							else
 							{

@@ -1,10 +1,5 @@
 ﻿using EBCustomerTask.Application.DTOs;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EBCustomerTask.Application.Validators
 {
@@ -22,7 +17,7 @@ namespace EBCustomerTask.Application.Validators
 
 			RuleFor(x => x.Email)
 				.NotEmpty().WithMessage("Email boş bırakılamaz.")
-				.MaximumLength(50).WithMessage("Email en fazla 100 karakter olabilir.")
+				.MaximumLength(100).WithMessage("Email en fazla 100 karakter olabilir.")
 				.EmailAddress().WithMessage("Email adresi geçersiz.");
 
 			RuleFor(x => x.PhoneNumber)

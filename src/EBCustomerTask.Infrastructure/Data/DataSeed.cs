@@ -1,12 +1,15 @@
-﻿using EBCustomerTask.Core.Entities;
+﻿using Bogus;
+using EBCustomerTask.Core.Entities;
 using EBCustomerTask.Core.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace EBCustomerTask.Infrastructure.Data
 {
-    public static class DataSeed
+	public static class DataSeed
     {
         public static async Task SeedAsync(IServiceProvider serviceProvider)
         {
@@ -17,6 +20,7 @@ namespace EBCustomerTask.Infrastructure.Data
 
             await dbContext.Database.MigrateAsync();
 
+            // Uygulama ayağa kalkarken, Rol ekler
             foreach (Role role in Enum.GetValues(typeof(Role)))
             {
                 if (!await roleManager.RoleExistsAsync(role.ToString()))
@@ -26,6 +30,7 @@ namespace EBCustomerTask.Infrastructure.Data
                 }
             }
 
+            // Uygulama ayağa kalkarken, User ve Admin ekler
             if (!dbContext.Users.Any())
             {
                 var admin1 = new AppUser() { UserName = "admin1@gmail.com", Email = "admin1@gmail.com" };
@@ -44,6 +49,44 @@ namespace EBCustomerTask.Infrastructure.Data
                 await userManager.AddToRoleAsync(user2, Role.User.ToString());
             }
 
+            // SQLServer'da Customers'da kayıt yoksa, fake Customer ekler
+            if (!dbContext.Customers.Any())
+            {
+                var faker = new Faker<Customer>()
+                    .RuleFor(c => c.Id, f => f.Random.Guid().ToString())
+                    .RuleFor(c => c.FirstName, f => f.Name.FirstName())
+                    .RuleFor(c => c.LastName, f => f.Name.LastName())
+                    .RuleFor(c => c.Email, f => f.Internet.Email())
+                    .RuleFor(c => c.PhoneNumber, f => f.Phone.PhoneNumber("##########"))
+                    .RuleFor(c => c.BirthDate, f => f.Date.Past(30))
+                    .RuleFor(c => c.PhotoUrl, f => f.Internet.Avatar());
+
+                var customers = faker.Generate(10);
+
+                await dbContext.Customers.AddRangeAsync(customers);
+                await dbContext.SaveChangesAsync();
+            }
+
+            var mongoClient = scope.ServiceProvider.GetRequiredService<MongoClient>();
+            var mongoDatabase = mongoClient.GetDatabase("EBCustomerTaskDb");
+            var customerCollection = mongoDatabase.GetCollection<Customer>("Customers");
+
+            // MongoDb'de Customers koleksiyonun'da kayıt yoksa fake kayıt ekler
+            if (!customerCollection.AsQueryable().Any())
+            {
+				var faker = new Faker<Customer>()
+					.RuleFor(c => c.Id, f => ObjectId.GenerateNewId().ToString())
+					.RuleFor(c => c.FirstName, f => f.Name.FirstName())
+					.RuleFor(c => c.LastName, f => f.Name.LastName())
+					.RuleFor(c => c.Email, f => f.Internet.Email())
+					.RuleFor(c => c.PhoneNumber, f => f.Phone.PhoneNumber("##########"))
+					.RuleFor(c => c.BirthDate, f => f.Date.Past(30))
+					.RuleFor(c => c.PhotoUrl, f => f.Internet.Avatar());
+
+				var customers = faker.Generate(10);
+
+				await customerCollection.InsertManyAsync(customers);
+			}
         }
     }
 }

@@ -1,3 +1,5 @@
+using DinkToPdf.Contracts;
+using DinkToPdf;
 using EBCustomerTask.Application.Interfaces;
 using EBCustomerTask.Application.Mappings;
 using EBCustomerTask.Application.Services;
@@ -14,6 +16,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +57,23 @@ builder.Services.AddScoped<MongoDbCustomerRepositoryStrategy>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 builder.Services.AddScoped<IPhotoService, PhotoService>();
+
+var architectureFolder = (IntPtr.Size == 8) ? "64 bit" : "32 bit";
+var wkHtmlToPdfPath = Path.Combine(builder.Environment.ContentRootPath, $"wkhtmltox\\v0.12.4\\{architectureFolder}\\libwkhtmltox");
+
+CustomAssemblyLoadContext context = new CustomAssemblyLoadContext();
+context.LoadUnmanagedLibrary(wkHtmlToPdfPath);
+
+builder.Services.AddSingleton<IConverter>(new SynchronizedConverter(new PdfTools()));
+
+builder.Services.AddSingleton<IPdfService, PdfService>();
+builder.Services.AddSingleton<IExcelService, ExcelService>();
+
+string mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDb");
+builder.Services.AddSingleton(new MongoClient(mongoDbConnectionString));
+
+
+builder.Services.AddHttpClient();
 
 
 builder.Services.AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<RegisterViewModelValidator>());

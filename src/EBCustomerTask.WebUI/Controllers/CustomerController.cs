@@ -1,20 +1,27 @@
 ﻿using EBCustomerTask.Application.DTOs;
 using EBCustomerTask.Application.Interfaces;
+using EBCustomerTask.Core.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EBCustomerTask.WebUI.Controllers
 {
+    [Authorize(Roles =$"{nameof(Role.Admin)}, {nameof(Role.User)}")]
 	public class CustomerController : Controller
     {
         private readonly ICustomerService _customerService;
         private readonly IPhotoService _photoService;
+        private readonly IPdfService _pdfService;
+        private readonly IExcelService _excelService;
 
-		public CustomerController(ICustomerService customerService, IPhotoService photoService)
+		public CustomerController(ICustomerService customerService, IPhotoService photoService, IPdfService pdfService, IExcelService excelService)
 		{
 			_customerService = customerService;
 			_photoService = photoService;
+			_pdfService = pdfService;
+			_excelService = excelService;
 		}
 
 		public async Task<IActionResult> Index(string search)
@@ -182,5 +189,29 @@ namespace EBCustomerTask.WebUI.Controllers
 
             return Json(customers);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadFilteredCustomersPdf(string query = "")
+        {
+			var customers = string.IsNullOrEmpty(query)
+				? await _customerService.GetAllAsync()
+				: await _customerService.GetAllAsync(query);
+
+            var pdfBytes = _pdfService.GenerateCustomerPdf(customers);
+
+            return File(pdfBytes, "application/pdf", $"{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+		}
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadFilteredCustomersExcel(string query = "")
+        {
+			var customers = string.IsNullOrEmpty(query)
+				? await _customerService.GetAllAsync()
+				: await _customerService.GetAllAsync(query);
+
+            var excelBytes = _excelService.GenerateCustomersExcel(customers);
+
+            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+		}
     }
 }

@@ -27,7 +27,16 @@ namespace EBCustomerTask.WebUI.Controllers
                 var result = await _identityService.CreateUserAsync(model, model.Password);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    var signInResult = await _identityService.SignInAsync(new LoginViewModel 
+                    { 
+                        Email = model.Email, 
+                        Password = model.Password,
+                        RememberMe = true
+                    });
+                    if (signInResult.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Customer");
+                    }
                 }
                 foreach (var error in result.Errors)
                 {
@@ -52,7 +61,7 @@ namespace EBCustomerTask.WebUI.Controllers
                 var result = await _identityService.SignInAsync(model);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Customer");
                 }
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
