@@ -24,7 +24,7 @@
 ## Kurulum
 
 1. Projeyi klonlayýn: `git clone <https://github.com/ahmet-er/EBCustomerTask.git>`
-2. `appsettings.json` dan `ConnectionStrings` kýsmýnda `SqlServer` için kendi connection stringinizi girin. (Uygulama default olarak SQLServer kullanýr. Sadece Admin rolüne sahip kullanýcýlar, kullanýlan veritabanýný runtime'da deðiþtirebilir.(Strategy pattern))
+2. `appsettings.json` dan `ConnectionStrings` kýsmýnda `SqlServer` için kendi connection stringinizi girin. (Uygulama default olarak SQLServer kullanýr. Atlas MongoDb için benim database'i kullanacaktýr, isterseniz onuda deðiþtirebilirsiniz.)
 3. Uygulamayý baþlatýn: `dotnet run`(Veritabaný migration'larý uygulama baþladýðýnda otomatik olarak uygulanacaðý için ilk baþlatma yavaþ olacaktýr.)
 
 ## Default Kullanýcý Bilgileri
