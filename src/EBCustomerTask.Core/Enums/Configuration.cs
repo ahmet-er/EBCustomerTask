@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EBCustomerTask.Core.Enums
+﻿namespace EBCustomerTask.Core.Enums
 {
-    public enum Configuration
+	public enum Configuration
     {
         DatabaseType
     }
